@@ -1,7 +1,7 @@
 import unittest
 import math
 
-from pyspark import SparkContext
+from pyspark.sql import SparkSession
 
 from smart_spark.entity.model.weibull_model import WeibullModel
 
@@ -15,7 +15,7 @@ class TestWeibullModel(unittest.TestCase):
             scale=1.
         )
 
-        sc = SparkContext("local", "test data")  # sets-up data to test on
+        sc = SparkSession.builder.getOrCreate().sparkContext
         cls._data = sc.parallelize(
             [0., 0., 0.]
         )
