@@ -58,4 +58,4 @@ class WeibullModel(BaseModel):
         float
             The log-likelihood that this model generated the given data distribution.
         """
-        return rdd.map(lambda x: math.log(self.pdf(x))).sum()
+        return rdd.map(lambda x: math.log(self.pdf(x))).sum()  # action
