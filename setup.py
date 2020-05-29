@@ -10,7 +10,7 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as fh:
 
 setup(
     name='smart-spark',
-    version='0.0.1',
+    version='0.0.3',
     description='Processing for S.M.A.R.T. hard-drive statistics.',
     long_description=long_description,
     long_description_content_type='text/markdown',
@@ -19,5 +19,5 @@ setup(
     author_email='maxwell.dylla@gmail.com',
     package_dir={'': 'src'},
     packages=find_packages(where='src'),
-    install_requires=['pyspark'],
+    install_requires=['pyspark', 'scipy', 'numpy'],
 )
