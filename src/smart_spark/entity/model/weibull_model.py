@@ -2,6 +2,7 @@
 """
 import math
 from pyspark.rdd import RDD
+from pyspark.sql import DataFrame, Row
 
 from .base_model import BaseModel
 
@@ -29,7 +30,7 @@ class WeibullModel(BaseModel):
         super().__init__(parameters)
 
     def pdf(self, x: float) -> float:
-        """The probability density function over the single variable.
+        """The probability density function (of failure) over the single variable.
 
         Parameters
         ----------
@@ -39,11 +40,28 @@ class WeibullModel(BaseModel):
         Returns
         -------
         float
-            The probability density.
+            The probability density of failure at x.
         """
         shape = self.parameters["shape"]
         scale = self.parameters["scale"]
-        return (shape / scale) * ((x / scale)**(shape - 1)) * math.exp(-((x / scale)**shape))
+        return (shape / scale) * ((x / scale)**(shape - 1.)) * math.exp(-((x / scale)**shape))
+
+    def cdf(self, x: float) -> float:
+        """The cumulative distribution function (of failure) over a single variable.
+
+        Parameters
+        ----------
+        x: float
+            The single variable.
+
+        Returns
+        -------
+        float
+            The cumulative probability of failure up to x.
+        """
+        shape = self.parameters["shape"]
+        scale = self.parameters["scale"]
+        return 1. - math.exp(-((x / scale)**shape))
 
     def log_likelihood(self, rdd: RDD) -> float:
         """Returns the log-likelihood that this model generated the given data distribution.
@@ -59,3 +77,27 @@ class WeibullModel(BaseModel):
             The log-likelihood that this model generated the given data distribution.
         """
         return rdd.map(lambda x: math.log(self.pdf(x))).sum()  # action
+
+    def right_censored_log_likelihood(self, df: DataFrame, censor_col: str = "censor", data_col: str = "data") -> float:
+        """Returns the log-likelihood that this model generated the given data distribution (right-censored).
+
+        Parameters
+        ----------
+        df: DataFrame
+            Data collection containing data and a censor.
+        censor_col: str
+            Column name for the censor (1 if the event occurred and 0 if censored).
+        data_col: str
+            Column name for the data (single Weibull variable).
+
+        Returns
+        -------
+        float
+            The log-likelihood that this model generated the given data distribution.
+        """
+        def likelihood(x: Row) -> float:
+            """likelihood for a single point"""
+            censor = x[censor_col]
+            data = x[data_col]
+            return (self.pdf(data)**censor) * ((1. - self.cdf(data))**(1. - censor))
+        return df.rdd.map(lambda x: math.log(likelihood(x))).sum()  # action
