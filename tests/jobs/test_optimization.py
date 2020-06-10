@@ -1,7 +1,4 @@
-from typing import List, Tuple
-
 import math
-import random
 import unittest
 import warnings
 
@@ -11,25 +8,7 @@ from pyspark.sql import SparkSession
 
 from smart_spark.jobs.optimization import fit_weibull, fit_censored_weibull
 
-
-def inverted_weibull_cdf(x: float, shape: float, scale: float) -> float:
-    return scale * ((- math.log(1 - x))**(1. / shape))
-
-
-def generate_weibull_data(points: int, shape: float, scale: float, seed=None) -> List[float]:
-    random.seed(a=seed)
-    data = [random.random() for i in range(points)]
-    data = [inverted_weibull_cdf(i, shape, scale) for i in data]
-    return data
-
-
-def censor_weibull_data(data: List[float], event_modifier: float, seed=None) -> List[Tuple[float, float]]:
-    random.seed(a=seed)
-    max_var = max(data)
-    observations = [random.random() * max_var * event_modifier for i in data]
-    censor = [1. if o > d else 0. for o, d in zip(observations, data)]
-    data = [min(d, o) for d, o in zip(data, observations)]
-    return list(zip(data, censor))
+from .generate_weibull_data import generate_weibull_data, censor_weibull_data
 
 
 class TestOptimization(unittest.TestCase):
