@@ -4,7 +4,7 @@ import unittest
 from pyspark.sql import SparkSession
 
 from smart_spark import data as bb_data
-from smart_spark.entity.data.back_blaze import schema as bb_schema
+from smart_spark.schema import schema as bb_schema
 from smart_spark.jobs.preprocessing import failure_events, partition_by_model
 
 

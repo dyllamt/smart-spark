@@ -5,7 +5,7 @@ import warnings
 from pyspark.sql import SparkSession
 
 from smart_spark.jobs.postprocessing import bin_counts, numeric_cdf
-from smart_spark.entity.model.weibull_model import WeibullModel
+from smart_spark.weibull import Weibull
 
 from .generate_weibull_data import generate_weibull_data, censor_weibull_data
 
@@ -41,7 +41,7 @@ class TestPostprocessing(unittest.TestCase):
         edges, counts = bin_counts(self._data, column="data", bins=100)
         x, y = numeric_cdf(edges, counts)
 
-        model = WeibullModel(2., 2.)
+        model = Weibull(2., 2.)
         s = [model.cdf(i) for i in x]
 
         for expected, actual in zip(s, y):
