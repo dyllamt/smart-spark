@@ -8,16 +8,15 @@ Processing for S.M.A.R.T. hard-drive statistics using the SPARK framework.
 pip install -e .
 ```
 
-
 ## Contents
 
 ### Backblaze Dataset
 
 The backblaze dataset for hard drive statistics contains diagnostic data from their data center. The
-dataset is available at the following url: <https://www.backblaze.com/b2/hard-drive-test-data.html>
+dataset is available at the following url: <https://www.backblaze.com/b2/hard-drive-test-data.html>.
 
 ```
-from smart_spark.schema import schema as bb_schema
+from smart_spark.schema import schema
 ```
 
 ### Weibull Distribution
@@ -34,7 +33,7 @@ from smart_spark.weibull import weibull
 
 The following data pipeline loads the backblaze dataset, filters the dataset for failure events,
 estimates the distribution parameters for each hard drive model, and returns the distribution paramters
-as well as bin counts of the underlying data.
+as well as bin counts (for plotting) of the underlying data.
 
 ```
 from smart_spark.jobs.preprocessing import failure_events, partition_by_model
