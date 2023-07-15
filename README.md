@@ -31,12 +31,21 @@ from smart_spark.weibull import weibull
 
 ### Pyspark Jobs
 
-The following data pipeline loads the backblaze dataset, filters the dataset for failure events,
-estimates the distribution parameters for each hard drive model, and returns the distribution paramters
+The following data pipeline loads the backblaze dataset and returns the distribution paramters
 as well as bin counts (for plotting) of the underlying data.
 
 ```
-from smart_spark.jobs.preprocessing import failure_events, partition_by_model
 from smart_spark.jobs.optimization import fit_censored_weibull
 from smart_spark.jobs.postprocessing import bin_counts, numeric_cdf
+
+spark = SparkSession.builder.getOrCreate()
+data = (
+    spark.read.format("csv")
+    .schema(bb_schema)
+    .option("header", "true")
+    .option("enforceSchema", "false")
+    .load(data_files)
+)
+distribution = fit_censored_weibull(data, method="Nelder-Mead")
+edges, counts = bin_counts(data, column="data", bins=100)
 ```
