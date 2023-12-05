@@ -1,6 +1,6 @@
 # Smart Spark
 
-Processing for S.M.A.R.T. hard-drive statistics using the SPARK framework.
+Processing for S.M.A.R.T. hard-drive statistics using the spark framework.
 
 ## Installation
 
